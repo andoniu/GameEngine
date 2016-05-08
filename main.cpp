@@ -5,7 +5,10 @@
 
 // TODO: make this generic
 int main(int /*argc*/, char* /*argv*/[]) {
-    GameEngine<TicTacToeState, TicTacToeMove> ticTacToeGame;
+    GameEngine<TicTacToeState, TicTacToeMove> ticTacToeGame([]{
+        std::vector<TicTacToeMove> ret;
+        return ret;
+    });
     TicTacToeState state;
     std::cout << "result: " << ticTacToeGame.minimax(state, 50) << std::endl;
     std::cout << "move: " << ticTacToeGame.getBestMove().x << ":" << ticTacToeGame.getBestMove().y << std::endl;

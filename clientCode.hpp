@@ -60,7 +60,12 @@ public:
     // returns how good is the current position for the current player compared to others
     // bigger is better
     int evaluate() const {
-        if (gameOver()) return -1; // game was ended, so we lost the game
+        if (gameOver()) {
+            if (this->color == WHITE)
+                return 1;
+            else
+                return -1; // game was ended, so we lost the game
+        }
         return 0; // don't know
     }
 

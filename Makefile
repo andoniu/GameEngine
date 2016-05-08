@@ -1,7 +1,10 @@
 OBJECTS=main.o
 EXE=game
 
-CXXFLAGS=-Wall -Wextra -std=c++14 -g
+DEPS := $(OBJECTS:.o=.d)
+-include $(DEPS)
+
+CXXFLAGS=-Wall -Wextra -std=c++14 -g -MD
 
 all: $(EXE)
 
