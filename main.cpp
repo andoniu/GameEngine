@@ -3,6 +3,7 @@
 
 #include <iostream>
 
+// TODO: make this generic
 int main(int /*argc*/, char* /*argv*/[]) {
     GameEngine<TicTacToeState, TicTacToeMove> ticTacToeGame;
     TicTacToeState state;
