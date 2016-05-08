@@ -1,5 +1,10 @@
 #include <vector>
 
+/*
+ * This file should be replaced by the game logic of
+ * whatever game you need to implement
+ */
+
 struct TicTacToeMove
 {
     int x;
