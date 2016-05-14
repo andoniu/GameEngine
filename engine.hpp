@@ -4,32 +4,31 @@
 #include <climits> // max/min
 #include <vector>
 #include <functional>
+#include <array>
 
-
-
-template <class GameState, typename GameMove, int numberOfPlayers = 2>
+template <class GameState, typename GameMove, int numberOfPlayers>
 class GameEngine {
-//    GameState state;
-    GameMove bestMove; // TODO
-    
-    typedef int Score [numberOfPlayers];
-    unsigned int currentPlayer = 0;
+    GameMove bestMove;
+
 public:
+    typedef std::array<int, numberOfPlayers> Score;
 
-    GameEngine(std::function<std::vector<GameMove>()> moves) {
-        moves();
-    }
 
-    int minimax(const GameState& state, unsigned int searchLevel) {
-        if (state.gameOver() || searchLevel == 0)
+    Score minimax(const GameState& state, unsigned int searchLevel) {
+        if (state.gameOver() || searchLevel == 0) {
             return state.evaluate();
-        auto maxScore = INT_MIN;
+        }
+        auto currentPlayer = state.getCurrentPlayer();
+        int max = INT_MIN;
+        Score maxScore;
         for (auto move : state.moves()) {
             auto nextState = state.next(move);
-            auto score = minimax(nextState, searchLevel - 1);
-            if (score > maxScore) {
-                maxScore = score;
+            Score score = minimax(nextState, searchLevel - 1);
+            // pick the biggest score, regardless of other players
+            if (score[currentPlayer] > max) {
+                max = score[currentPlayer];
                 bestMove = move; // copy-ctor
+                maxScore = score;
             }
         }
         return maxScore;

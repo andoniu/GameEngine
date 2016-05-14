@@ -1,8 +1,14 @@
+#include "engine.hpp"
+
 #include <vector>
+#include <array>
 
 /*
  * This file should be replaced by the game logic of
  * whatever game you need to implement
+ 
+ Need to define:
+ Move, State
  */
 
 struct TicTacToeMove
@@ -13,13 +19,15 @@ struct TicTacToeMove
 
 class TicTacToeState
 {
+    using Score = GameEngine<TicTacToeState, TicTacToeMove, 2>::Score;
     int table[3][3] = {{0,0,0}, {0,0,0}, {0,0,0}};
-    enum PlayerColor {
-        BLACK = 1,
-        WHITE = 2
-    };
-    PlayerColor color = WHITE;
+    unsigned int currentPlayer = 0;
 public:
+
+    unsigned int getCurrentPlayer() const {
+        return currentPlayer;
+    }
+    
     // return all moves from this state
     std::vector<TicTacToeMove> moves() const {
         std::vector<TicTacToeMove> ret;
@@ -59,21 +67,23 @@ public:
 
     // returns how good is the current position for the current player compared to others
     // bigger is better
-    int evaluate() const {
+    Score evaluate() const {
+        constexpr Score win = {1,-1};
+        constexpr Score loss = {-1,1};
         if (gameOver()) {
-            if (this->color == WHITE)
-                return 1;
+            if (currentPlayer == 0)
+                return win;
             else
-                return -1; // game was ended, so we lost the game
+                return loss;
         }
-        return 0; // don't know
+        return Score{{0,0}}; // don't know
     }
 
     TicTacToeState next(const TicTacToeMove& move) const {
         TicTacToeState nextState = *this;
-        PlayerColor nextPlayerColor = color == WHITE ? BLACK : WHITE;
-        nextState.table[move.x][move.y] = nextPlayerColor;
-        nextState.color = nextPlayerColor;
+        auto nextPlayer = (currentPlayer + 1) % 2;
+        nextState.table[move.x][move.y] = nextPlayer+1;
+        nextState.currentPlayer = nextPlayer;
         return nextState; // TODO: move ctor here maybe?
     }
 };

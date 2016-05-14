@@ -5,17 +5,17 @@
 
 // TODO: make this generic
 int main(int /*argc*/, char* /*argv*/[]) {
-    GameEngine<TicTacToeState, TicTacToeMove> ticTacToeGame([]{
-        std::vector<TicTacToeMove> ret;
-        return ret;
-    });
+    GameEngine<TicTacToeState, TicTacToeMove, 2> ticTacToeGame;
     TicTacToeState state;
-    std::cout << "result: " << ticTacToeGame.minimax(state, 50) << std::endl;
+    auto score = ticTacToeGame.minimax(state, 19);
+    std::cout << "result: " << score[0] << ":" << score[1] << std::endl;
     std::cout << "move: " << ticTacToeGame.getBestMove().x << ":" << ticTacToeGame.getBestMove().y << std::endl;
     // make one move at a time
     for (int i=0; i<8; i++) {
         state = state.next(ticTacToeGame.getBestMove());
-        std::cout << "result " << i << ": " << ticTacToeGame.minimax(state, 20) << std::endl;
+        score = ticTacToeGame.minimax(state, 19);
+        std::cout << "result " << i << ": " << score[0] << ":" << score[1]
+            << "player: " << state.getCurrentPlayer() << std::endl;
         std::cout << "move " << i << ": " << ticTacToeGame.getBestMove().x << ":" << ticTacToeGame.getBestMove().y << std::endl;
     }
 }
