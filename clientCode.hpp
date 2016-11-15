@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <array>
+#include <iostream> // for debug
 
 /*
  * This file should be replaced by the game logic of
@@ -11,79 +12,100 @@
  Move, State
  */
 
-struct TicTacToeMove
-{
-    int x;
-    int y;
-};
+// struct TicTacToeMove
+// {
+//     int x;
+//     int y;
+// };
 
 class TicTacToeState
 {
-    using Score = GameEngine<TicTacToeState, TicTacToeMove, 2>::Score;
+    //using Score = GameEngine<TicTacToeMove, 2>::Score;
+    using Score = std::tuple<int,int>;
     int table[3][3] = {{0,0,0}, {0,0,0}, {0,0,0}};
-    unsigned int currentPlayer = 0;
-public:
+    enum PlayerNumber {
+        FIRST = 0,
+        SECOND = 1
+    };
+    //unsigned int currentPlayer = 0;
+    PlayerNumber currentPlayer = PlayerNumber::FIRST;
+    Score score = {0,0};
 
-    unsigned int getCurrentPlayer() const {
+    constexpr const Score wl() const noexcept {
+        return  (currentPlayer == 1) ? Score({INT_MAX,INT_MIN}) : Score({INT_MIN,INT_MAX});
+    }
+
+public:
+    unsigned int getCurrentPlayer() const noexcept {
         return currentPlayer;
     }
     
     // return all moves from this state
-    std::vector<TicTacToeMove> moves() const {
-        std::vector<TicTacToeMove> ret;
+    std::vector<TicTacToeState> moves() const noexcept {
+        std::vector<TicTacToeState> ret;
         ret.reserve(10);
         for(int i=0; i<3; i++) {
             for (int j=0; j<3; j++) {
                 if (table[i][j] == 0) {
-                    ret.push_back({i,j});
+                    ret.push_back(next(i,j));
                 }
             }
         }
         return ret;
     }
 
-    bool gameOver() const {
-        for (int i=0;i<3;i++){
-            for(int j=0;j<3;j++)
-                if (table[i][j] == 0) return false;
-        }
+    /*constexpr*/ bool gameOver() const noexcept {
+        return std::get<0>(score) || std::get<1>(score);
+    }
+
+    void computeScore() noexcept {
         for(int i=0; i<3; i++){
-            if (table[i][0] == table[i][1] &&
-                table[i][1] == table[i][2])
-                return true;
-            if (table[0][i] == table[1][i] &&
-                table[1][i] == table[2][i])
-                return true;
-            if (table[0][0] == table[1][1] &&
-                table[1][1] == table[2][2])
-                return true;
-            if (table[2][0] == table[1][1] &&
-                table[1][1] == table[0][2])
-                return true;
+            if (table[i][0] && table[i][0] == table[i][1] &&
+                table[i][1] == table[i][2]) {
+                    score = wl();
+                    return;
+                }
+            if (table[0][i] && table[0][i] == table[1][i] &&
+                table[1][i] == table[2][i]) {
+                    score = wl();
+                    return;
+                }
+            if (table[0][0] && table[0][0] == table[1][1] &&
+                table[1][1] == table[2][2]) {
+                    score = wl();
+                    return;
+                }
+            if (table[2][0] && table[2][0] == table[1][1] &&
+                table[1][1] == table[0][2]) {
+                    score = wl();
+                    return;
+                }
         }
         
-        return false;
+        score = {0,0};
     }
 
     // returns how good is the current position for the current player compared to others
     // bigger is better
-    Score evaluate() const {
-        constexpr Score win = {1,-1};
-        constexpr Score loss = {-1,1};
-        if (gameOver()) {
-            if (currentPlayer == 0)
-                return win;
-            else
-                return loss;
-        }
-        return Score{{0,0}}; // don't know
+    constexpr Score evaluate() const noexcept {
+        return score;
     }
 
-    TicTacToeState next(const TicTacToeMove& move) const {
+    TicTacToeState next(int x, int y) const noexcept {
         TicTacToeState nextState = *this;
-        auto nextPlayer = (currentPlayer + 1) % 2;
-        nextState.table[move.x][move.y] = nextPlayer+1;
-        nextState.currentPlayer = nextPlayer;
-        return nextState; // TODO: move ctor here maybe?
+        nextState.table[x][y] = currentPlayer+1;
+        nextState.currentPlayer = currentPlayer == PlayerNumber::FIRST ?
+            PlayerNumber::SECOND : PlayerNumber::FIRST;
+        nextState.computeScore(); 
+        return std::move(nextState);
+    }
+    
+    // for debug
+    void print() {
+        for (int i=0; i<3; i++)
+        {
+            std::cout << table[i][0] << table[i][1] << table[i][2] << std::endl;
+        }
+        std::cout << "player: " << currentPlayer << " score: " << std::get<0>(score) << ":" << std::get<1>(score) << std::endl; 
     }
 };

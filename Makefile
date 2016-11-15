@@ -2,9 +2,9 @@ OBJECTS=main.o
 EXE=game
 
 DEPS := $(OBJECTS:.o=.d)
--include $(DEPS)
 
-CXXFLAGS=-Wall -Wextra -std=c++14 -g -MD
+
+CXXFLAGS=-Wall -Wextra -std=c++17 -g -MD
 
 all: $(EXE)
 
@@ -14,4 +14,5 @@ $(EXE): $(OBJECTS)
 clean:
 	$(RM) $(OBJECTS) $(EXE)
 
+-include $(DEPS)
 .PHONY:all clean
