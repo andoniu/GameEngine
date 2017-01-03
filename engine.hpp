@@ -12,19 +12,16 @@ namespace gamealgo {
     template <typename GameState, int nbPlayers, int player = 0>
     GameState minimax() {
     }
-
-    template <typename GameState, int nbPlayers, int player = 0>
-    GameState minimax() {
-    }
 }
 
+template <int numberOfPlayers>
 class GameEngine {
 //    State bestMove;
 
 public:
-    //typedef std::array<int, numberOfPlayers> Score; // TODO: std::tuple maybe?
+    typedef std::array<int, numberOfPlayers> Score; // TODO: std::tuple maybe?
 
-    template <typename GameState, int numberOfPlayers, int player = 0>
+    template <typename GameState, int player = 0>
     constexpr GameState minimax(const GameState& state, unsigned int searchLevel) const noexcept {
         //std::cout << "minmax(" << searchLevel << ")" << std::endl;
         if (state.gameOver() || searchLevel == 0) {
@@ -32,7 +29,7 @@ public:
         }
         auto currentPlayer = state.getCurrentPlayer();
         int max = INT_MIN;
-//        Score maxScore {};
+        Score maxScore {};
         for (auto nextState : state.moves()) {
             //auto nextState = state.next(move);
             GameState bestState = minimax<player+1>(nextState, searchLevel - 1);
@@ -40,25 +37,28 @@ public:
             if ( bestState.evaluate() > state.evaluate() ){
                 
             }
-            if (score[currentPlayer] > max) {
-                max = score[currentPlayer];
-                // bestMove = move; // move-ctor
-                maxScore = score;
-            }
+            // TODO
+            // if (score[currentPlayer] > max) {
+            //     max = score[currentPlayer];
+            //     // bestMove = move; // move-ctor
+            //     maxScore = score;
+            // }
         }
         return maxScore;
     }
 
-    template <typename GameState, int numberOfPlayers>
-    constexpr GameState minimax<GameState, numberOfPlayers, numberOfPlayers>(const GameState& state, unsigned int searchLevel) const noexcept {
-        return minimax<GameState, numberOfPlayers, 0>(state, searchLevel);
-    }
 
     // const GameMove& getBestMove() const noexcept {
     //     return bestMove; 
     // }
 };
 
+
+template <int numberOfPlayers>
+template <typename GameState>
+constexpr GameState GameEngine<numberOfPlayers>::minimax<GameState, numberOfPlayers>(const GameState& state, unsigned int searchLevel) /*const noexcept*/ {
+        return minimax<GameState, numberOfPlayers, 0>(state, searchLevel);
+}
 
 
 /////////

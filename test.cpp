@@ -2,28 +2,33 @@
 
 int cnt = 0;
 
-template <int player=0>
-struct GameEngine
-{
-    template <typename GameState> GameState minimax();
+
+template <typename S>
+struct GE {
+    void run() {
+        S s;
+        mm(s);
+    }
+
+    template <int p=0>
+    int mm(const S& s) {
+    }
+
+//    template <>
+//    int mm<5>(const S& s) {
+//        mm(s);
+//    }
 };
 
-template <int p>
-template <typename GameState>
-GameState GameEngine<p>::minimax<GameState>() {
-    return GameEngine<p+1>::minimax<GameState>();
-}
 template <>
-template <typename GameState>
-GameState GameEngine<5>::minimax() {
-    std::cout << "reached " << cnt << std::endl;
-    if (++cnt == 20) return 0;
-    return GameEngine<0>::minimax<GameState>();
-}
+template <>
+int GE<int>::mm<5>(const int& ) {}
+
+
 
 
 
 int main() {
-    GameEngine<0> x;
-    x.minimax<int>();
+    GE<int> x;
+    x.run();
 }

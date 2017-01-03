@@ -6,7 +6,10 @@ DEPS := $(OBJECTS:.o=.d)
 
 CXXFLAGS=-Wall -Wextra -std=c++17 -g -MD
 
-all: $(EXE)
+all: test2.o
+	$(CXX) $^ -o $@
+
+all_original: $(EXE)
 
 $(EXE): $(OBJECTS)
 	$(CXX) $(OBJECTS) -o $@
