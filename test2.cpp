@@ -1,44 +1,4 @@
-#include <tuple>
-#include <array>
-#include <vector>
 
-#include <iostream>
-#include <cassert>
-#include <climits>
-
-// minimax algo
-template <typename GameState, int numberOfPlayers, int maxDepth, int moveNumber,
-    typename std::enable_if_t<maxDepth*numberOfPlayers == moveNumber>* = nullptr>
-constexpr std::array<int, numberOfPlayers> minimax(const GameState& fromState) {
-    std::cout << "limit reached..." << std::endl;
-    return fromState.evaluate();
-//    return std::array<int, numberOfPlayers> {}; // TODO: compute here the score comparing to the other players
-}
-
-template <typename GameState, int numberOfPlayers, int maxDepth, int moveNumber,
-    typename std::enable_if_t<(maxDepth*numberOfPlayers > moveNumber)>* = nullptr>
-constexpr std::array<int, numberOfPlayers> minimax(const GameState& fromState) {
-    constexpr int playerNumber = moveNumber % numberOfPlayers;
-    //std::cout << "player: " << playerNumber << " move number: " << moveNumber << std::endl;
-    std::array<int, numberOfPlayers> bestScoreSoFar = {0}; // any score would be better than this
-    for (const auto& nextMove : fromState.getAllPossibleMoves()) {
-        GameState nextState = fromState.apply(nextMove);
-        auto score = nextState.evaluate();
-        if (!GameState::gameOver(score)) {
-            score = minimax<GameState, numberOfPlayers, maxDepth, moveNumber+1>(nextState);
-        }
-        else {
-            std::cout << "GameOver!\n";
-            //fromState.print();
-            //nextState.print();
-        }
-        if (score[playerNumber] > bestScoreSoFar[playerNumber]) {
-            bestScoreSoFar = score;
-            nextState.print();
-        }
-    }
-    return bestScoreSoFar;
-}
 
 int main() {
     struct TicTacToeState {
@@ -126,6 +86,9 @@ int main() {
             std::cout << "\t\tplayer: " << currentPlayer << " score: " << score[0] << ":" << score[1] << "\n"; 
         }
     };
+
+
+
     TicTacToeState initialState;
     minimax<TicTacToeState,2,19,0>(initialState);
 }

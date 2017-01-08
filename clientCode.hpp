@@ -1,111 +1,57 @@
-#include "engine.hpp"
+#ifndef _CLIENT_CODE_H_
+#define _CLIENT_CODE_H_
 
-#include <vector>
 #include <array>
-#include <iostream> // for debug
+#include <cassert>
+#include <climits>
 
-/*
- * This file should be replaced by the game logic of
- * whatever game you need to implement
- 
- Need to define:
- Move, State
- */
+template <int player>
+struct TicTacToeGameLogic {
+    using State = std::array< std::array<int, 3> ,3>; // [3][3]; // = {{0,0,0}, {0,0,0}, {0,0,0}};
+    using Score = std::array<int, 2>; // TODO: this should be declared in engine?
 
-// struct TicTacToeMove
-// {
-//     int x;
-//     int y;
-// };
-
-class TicTacToeState
-{
-    //using Score = GameEngine<TicTacToeMove, 2>::Score;
-    using Score = std::tuple<int,int>;
-    int table[3][3] = {{0,0,0}, {0,0,0}, {0,0,0}};
-    enum PlayerNumber {
-        FIRST = 0,
-        SECOND = 1
-    };
-    //unsigned int currentPlayer = 0;
-    PlayerNumber currentPlayer = PlayerNumber::FIRST;
-    Score score = {0,0};
-
-    constexpr const Score wl() const noexcept {
-        return  (currentPlayer == 1) ? Score({INT_MAX,INT_MIN}) : Score({INT_MIN,INT_MAX});
+    constexpr State next(const State& state) {
+        State next = state;
+        // TODO
+        return next;
     }
 
-public:
-    unsigned int getCurrentPlayer() const noexcept {
-        return currentPlayer;
-    }
-    
-    // return all moves from this state
-    std::vector<TicTacToeState> moves() const noexcept {
-        std::vector<TicTacToeState> ret;
-        ret.reserve(10);
-        for(int i=0; i<3; i++) {
-            for (int j=0; j<3; j++) {
-                if (table[i][j] == 0) {
-                    ret.push_back(next(i,j));
-                }
-            }
-        }
-        return ret;
-    }
+    constexpr const Score wl() const noexcept;
 
-    /*constexpr*/ bool gameOver() const noexcept {
-        return std::get<0>(score) || std::get<1>(score);
-    }
-
-    void computeScore() noexcept {
+    constexpr const Score score(const State& state) const noexcept {
         for(int i=0; i<3; i++){
-            if (table[i][0] && table[i][0] == table[i][1] &&
-                table[i][1] == table[i][2]) {
-                    score = wl();
-                    return;
+            if (state[i][0] && state[i][0] == state[i][1] &&
+                state[i][1] == state[i][2]) {
+                    assert(state[i][0] == player);
+                    return wl();
                 }
-            if (table[0][i] && table[0][i] == table[1][i] &&
-                table[1][i] == table[2][i]) {
-                    score = wl();
-                    return;
+            if (state[0][i] && state[0][i] == state[1][i] &&
+                state[1][i] == state[2][i]) {
+                    return wl();
                 }
-            if (table[0][0] && table[0][0] == table[1][1] &&
-                table[1][1] == table[2][2]) {
-                    score = wl();
-                    return;
-                }
-            if (table[2][0] && table[2][0] == table[1][1] &&
-                table[1][1] == table[0][2]) {
-                    score = wl();
-                    return;
+            if (state[0][0] && state[0][0] == state[1][1] &&
+                state[1][1] == state[2][2]) {
+                    return wl();
                 }
         }
-        
-        score = {0,0};
-    }
-
-    // returns how good is the current position for the current player compared to others
-    // bigger is better
-    constexpr Score evaluate() const noexcept {
-        return score;
-    }
-
-    TicTacToeState next(int x, int y) const noexcept {
-        TicTacToeState nextState = *this;
-        nextState.table[x][y] = currentPlayer+1;
-        nextState.currentPlayer = currentPlayer == PlayerNumber::FIRST ?
-            PlayerNumber::SECOND : PlayerNumber::FIRST;
-        nextState.computeScore(); 
-        return std::move(nextState);
-    }
-    
-    // for debug
-    void print() {
-        for (int i=0; i<3; i++)
-        {
-            std::cout << table[i][0] << table[i][1] << table[i][2] << std::endl;
+        if (state[2][0] && state[2][0] == state[1][1] &&
+            state[1][1] == state[0][2]) {
+                return wl();
         }
-        std::cout << "player: " << currentPlayer << " score: " << std::get<0>(score) << ":" << std::get<1>(score) << std::endl; 
+        return {0, 0};
     }
+
 };
+
+template <>
+constexpr const std::array<int, 2> TicTacToeGameLogic<0>::wl() const noexcept {
+    return {INT_MAX, 0};
+}
+
+template <>
+constexpr const std::array<int, 2> TicTacToeGameLogic<1>::wl() const noexcept {
+    return {0, INT_MAX};
+}
+
+
+#endif
