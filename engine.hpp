@@ -25,22 +25,22 @@ constexpr std::array<int, numberOfPlayers> minimax(const typename GameLogic::Sta
     constexpr int playerNumber = moveNumber % numberOfPlayers;
     //std::cout << "player: " << playerNumber << " move number: " << moveNumber << std::endl;
     std::array<int, numberOfPlayers> bestScoreSoFar = {0}; // any score would be better than this
-    for (const auto& nextMove : fromState.getAllPossibleMoves()) {
-        GameState nextState = fromState.apply(nextMove);
-        auto score = nextState.evaluate();
-        if (!GameState::gameOver(score)) {
-            score = minimax<GameState, numberOfPlayers, maxDepth, moveNumber+1>(nextState);
-        }
-        else {
-            std::cout << "GameOver!\n";
-            //fromState.print();
-            //nextState.print();
-        }
-        if (score[playerNumber] > bestScoreSoFar[playerNumber]) {
-            bestScoreSoFar = score;
-            nextState.print();
-        }
-    }
+    // for (const auto& nextMove : fromState.getAllPossibleMoves()) {
+    //     auto nextState = fromState.apply(nextMove);
+    //     auto score = nextState.evaluate();
+    //     if (!GameLogic::gameOver(score)) {
+    //         score = minimax<GameLogic, numberOfPlayers, maxDepth, moveNumber+1>(nextState);
+    //     }
+    //     else {
+    //         std::cout << "GameOver!\n";
+    //         //fromState.print();
+    //         //nextState.print();
+    //     }
+    //     if (score[playerNumber] > bestScoreSoFar[playerNumber]) {
+    //         bestScoreSoFar = score;
+    //         nextState.print();
+    //     }
+    // }
     return bestScoreSoFar;
 }
 
